@@ -3,7 +3,39 @@ import timeit
 
 
 def findLongestAmicableChain(n):
-    return []
+    divisorSum = [0 for _ in range(n+1)]
+
+    for i in range(1, n+1):
+        for j in range(2*i, n+1, i):
+            divisorSum[j]+=i
+
+    visited = [False for _ in range(n+1)]
+    longest_chain = []
+
+    # print(divisorSum)
+
+    def findChain(num):
+        chain = []
+        while 0< num <= n and not visited[num]:
+            visited[num] = True
+            chain.append(num)
+            num = divisorSum[num]
+
+        for i in range(len(chain)):
+            if chain[i] == num:
+                return chain[i:]
+        return []
+    
+    for i in range(1, n+1):
+        if not visited[i]:
+            chain = findChain(i)
+            if len(chain) > len(longest_chain):
+                longest_chain = chain
+            elif len(chain) == len(longest_chain):
+                longest_chain = min(longest_chain, chain)
+
+    return longest_chain
+
 
 
 def findSarrayDivSqrt(n):
