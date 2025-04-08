@@ -56,11 +56,75 @@ def totientMaximum2(N):
 
 
 def totientMaximum3(*Ns):
-    return []    
+    maxN = max(Ns) # Find the maximum N in the input list
+
+    def findmaxprimemut(n):
+        primes = [2]
+        i = 3
+        x = 2
+        while True:
+            if i > n:
+                break
+            for p in primes:
+                if i % p == 0:
+                    break
+            else:
+                if x*i > n:
+                    break
+                primes.append(i)
+                x *= i
+                
+            i += 2
+
+        return primes
+    primes = findmaxprimemut(maxN) # Find all prime numbers up to maxN
+
+
+    res = []
+
+    for n in Ns:
+        res_n = 1
+
+        for i in range(len(primes)):
+            if primes[i] * res_n > n:
+                break
+            res_n *= primes[i]
+        
+        res.append(res_n)
+    
+    return res
 
 
 def totientMinimum(*Ns):    
-    return []
+    maxNs = max(Ns) # Find the maximum N in the input list
+
+    primes = [1] * (maxNs+1)
+    primes[0] = 0
+    primes[1] = 0
+    for i in range(2, int(math.sqrt(maxNs)) + 1):
+        if primes[i]:
+            for j in range(i * 2, maxNs + 1, i):
+                primes[j] = 0
+
+    primes = [i for i in range(maxNs+1) if primes[i]] # Filter out non-prime numbers
+
+    res = []
+
+    def binarysearch_lessthanequal(arr, x):
+        start = 0
+        end = len(arr) - 1
+        while start <= end:
+            mid = (start + end) // 2
+            if arr[mid] <= x:
+                start = mid + 1
+            else:
+                end = mid - 1
+        return arr[end]
+
+    for n in Ns:        
+        res.append(binarysearch_lessthanequal(primes, n))
+            
+    return res
 
 
 def readFileIntoIntegerList(fileName):
@@ -90,7 +154,7 @@ if __name__ == "__main__":
         tTotientMaximum = timeit.timeit(lambda: f(n), number=repeat)/repeat    
         print(f"{f.__name__}({n}) took {tTotientMaximum} seconds on average")
 
-    '''# Test for after-class problems
+    # Test for after-class problems
     print()
     print("Correctness test for totientMaximum3()")
     print("For each test case, if your answer does not appear within 5 seconds, then consider that you failed the case")
@@ -158,4 +222,4 @@ if __name__ == "__main__":
         print("F ", end='')
         correct = False
 
-    print(timeit.timeit(lambda: totientMinimum(*inputLines), number=1))'''
+    print(timeit.timeit(lambda: totientMinimum(*inputLines), number=1))
